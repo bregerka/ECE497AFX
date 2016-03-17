@@ -28,8 +28,12 @@ audio_player.QueueDuration = 0; % useful for very short audio clips
 %% Convert the user interface values:
 % delay in samples and linear gain
 delay = (delay_ms/1000)*audio_reader.SampleRate;
-g = 2^(g_dB/6);
-gfb = 2^(g_dB/6);
+a1 = 2^(g_dB/6);
+a2 = 2^(0/6);
+b1 = 2^(g_dB/6);
+b2 = 2^(0/6);
+c1 = 2^(g_dB/6);
+c2 = 2^(0/6);
 
 %% Create the delay line object
 audio_delayline = dsp.Delay(round(delay));
@@ -45,9 +49,11 @@ while ~isDone(audio_reader)
     % insert a new frame, too;
     if pass_first_time
         pass_first_time = 0;
-        delayline_out = step(audio_delayline, x);
+        delayL_out = step(audio_delayline, x);
+        delayR_out = step(audio_delayline, x);
     else
-        delayline_out = gfb*step(audio_delayline, x);
+        delayL_out = gfb*step(audio_delayline, x);
+        delayR_out = gfb*step(audio_delayline, x);
     end
     % Generate the output
    % y = x + (g-gfb)*delayline_out;    % mixed to mono
