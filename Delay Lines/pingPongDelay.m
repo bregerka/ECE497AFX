@@ -48,14 +48,16 @@ while ~isDone(audio_reader)
     % the first loop since there isnt anything from the delay line at first
     % insert a new frame, too;
     if pass_first_time
+        x = x*diag([a1 a2]);
         pass_first_time = 0;
         delay_out = step(audio_delayline, x);
     else
-        delay_out = gfb*step(audio_delayline, x);
+        x = x*diag([a1 a2]);
+        delay_out = a1*step(audio_delayline, x);
     end
     % Generate the output
    % y = x + (g-gfb)*delayline_out;    % mixed to mono
-   y = x + g*delayline_out;
+   y = x + a2*delay_out;
    %y = [x g*delayline_out];    % stereo
     
     % Listen to the results
