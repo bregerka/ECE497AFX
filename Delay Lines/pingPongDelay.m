@@ -16,7 +16,7 @@ g_dB = -5; % feed-forward gain (dB) / -5dB / -120dB to +2dB
 more_time_sec = 1; % time extension after source audio ends (seconds)
 
 % Source audio:
-file_name = 'stacys.mp3';%'A_eng_f1.wav'; % mono
+file_name = 'show.m4a';%'A_eng_f1.wav'; % mono
 %file_name = 'Mixing Audio (Roey Izhaki)\11-014 Guitar Src.wav'; % stereo
 %audio_folder = 'C:\doering\Class\ECE497afx\resources\sounds';
 
@@ -51,6 +51,7 @@ while ~isDone(audio_reader)
         x = x*diag([a1 a2]);
         pass_first_time = 0;
         delay_out = step(audio_delayline, x);
+        delay_out = delay_out*diag([c1 c2]);
     else
         x = x*diag([a1 a2]);
         delay_out = a1*step(audio_delayline, x);
