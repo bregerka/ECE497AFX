@@ -29,17 +29,18 @@ audio_player.QueueDuration = 0; % useful for very short audio clips
 % delay in samples and linear gain
 delay = (delay_ms/1000)*audio_reader.SampleRate;
 a1 = 2^(g_dB/6);
-a2 = 2^(0/6);
-b1 = 2^(g_dB/6);
+a2 = 2^(g_dB/6);
+b1 = 2^(-2/6);
 b2 = 2^(0/6);
 c1 = 2^(g_dB/6);
-c2 = 2^(0/6);
+c2 = 2^(g_dB/6);
 
 %% Create the delay line object
 audio_delayline = dsp.Delay(round(delay));
 
 %% Read, process, and play the audio
 pass_first_time = 1;
+bDelays = 0;
 while ~isDone(audio_reader)
     % Retrieve the next audio frame from the file
     x = step(audio_reader);
@@ -48,17 +49,21 @@ while ~isDone(audio_reader)
     % the first loop since there isnt anything from the delay line at first
     % insert a new frame, too;
     if pass_first_time
-        x = x*diag([a1 a2]);
+        sig = x*diag([a1 a2]);
         pass_first_time = 0;
-        delay_out = step(audio_delayline, x);
+        delay_out = step(audio_delayline, sig);
+        bDelays = delay_out;
         delay_out = delay_out*diag([c1 c2]);
     else
-        x = x*diag([a1 a2]);
-        delay_out = a1*step(audio_delayline, x);
+        bMatrix = [0 b2;b1 0];
+        sig = x*diag([a1 a2])+bDelays*bMatrix;
+        delay_out = step(audio_delayline, sig); 
+        bDelays = delay_out;
+        delay_out = delay_out*diag([c1 c2]);
     end
     % Generate the output
    % y = x + (g-gfb)*delayline_out;    % mixed to mono
-   y = x + a2*delay_out;
+   y = x + delay_out;
    %y = [x g*delayline_out];    % stereo
     
     % Listen to the results
