@@ -16,7 +16,7 @@ g_dB = -5; % feed-forward gain (dB) / -5dB / -120dB to +2dB
 more_time_sec = 1; % time extension after source audio ends (seconds)
 
 % Source audio:
-file_name = 'show.m4a';%'A_eng_f1.wav'; % mono
+file_name = 'snare.wav';%'A_eng_f1.wav'; % mono
 %file_name = 'Mixing Audio (Roey Izhaki)\11-014 Guitar Src.wav'; % stereo
 %audio_folder = 'C:\doering\Class\ECE497afx\resources\sounds';
 
@@ -30,8 +30,8 @@ audio_player.QueueDuration = 0; % useful for very short audio clips
 delay = (delay_ms/1000)*audio_reader.SampleRate;
 a1 = 2^(g_dB/6);
 a2 = 2^(g_dB/6);
-b1 = 2^(-2/6);
-b2 = 2^(0/6);
+b1 = 2^(g_dB/6);
+b2 = 0;%2^(g_dB/6);
 c1 = 2^(g_dB/6);
 c2 = 2^(g_dB/6);
 
@@ -64,7 +64,7 @@ while ~isDone(audio_reader)
     % Generate the output
    % y = x + (g-gfb)*delayline_out;    % mixed to mono
    y = x + delay_out;
-   %y = [x g*delayline_out];    % stereo
+   y = [(x(:, 1)+ delay_out(:, 1)) (x(:, 2)+ delay_out(:, 2))];    % stereo
     
     % Listen to the results
     step(audio_player, y);
@@ -75,7 +75,7 @@ end
 x(:) = 0;
 for k=1:floor(more_time_sec*audio_reader.SampleRate/audio_reader.SamplesPerFrame)
     delayline_out = step(audio_delayline, x);
-    y = x + g*delayline_out;
+    y = x + delayline_out;
     step(audio_player, y);
 end
 
