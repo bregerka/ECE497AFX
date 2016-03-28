@@ -17,7 +17,7 @@ clear, close all
 %% User interface:
 
 % Effect parameters with suggested initial value and typical range:
-LFO_freq_Hz = .25; % low-frequency oscillator rate (Hz) / 1Hz / 0.1 to 10Hz
+LFO_freq_Hz = .5; % low-frequency oscillator rate (Hz) / 1Hz / 0.1 to 10Hz
 LFO_depth_samples = 1000; % low-frequency oscillator depth (samples) / 5000 / 65536
 delay_max_ms = 1000; % max delay line length (ms) / 0ms / 0 to 1000ms
                      % (the delay line max length is 65535 samples)
@@ -27,10 +27,9 @@ osc_freq_Hz = 440;
 
 % Source audio:
 file_name = 'guitar.wav';
-audio_folder = 'C:\Users\bochnoej\Documents\GitHub\ECE497AFX\Audio';
 
 %% Create the audio reader and player objects
-audio_reader = dsp.AudioFileReader([audio_folder '\' file_name]);
+audio_reader = dsp.AudioFileReader(file_name);
 audio_player = dsp.AudioPlayer('SampleRate', audio_reader.SampleRate);
 audio_player.QueueDuration = 0;
 
@@ -54,8 +53,8 @@ test_tone.SamplesPerFrame = audio_reader.SamplesPerFrame; % required; defaults t
    % values near 1 or 2; longer frame times show evidence of working 
    % properly at the individual sample level; as evidence, listen to
    % one frame of y when samples per frame is 2^14
-%LFO = dsp.SineWave(0.5,LFO_freq_Hz);
-LFO = dsp.TriWave(0.5,LFO_freq_Hz);
+LFO = dsp.SineWave(0.5,LFO_freq_Hz);
+%LFO = dsp.TriWave(0.5,LFO_freq_Hz);
 LFO.SampleRate = audio_reader.SampleRate;
 LFO.SamplesPerFrame = test_tone.SamplesPerFrame;
 
@@ -65,7 +64,7 @@ while ~isDone(audio_reader)
     x = step(audio_reader);
     
     % Uncommment this line to use the 440-Hz test tone instead
-    x = step(test_tone);
+    % x = step(test_tone);
     
     % Get the next low-frequency oscillator output frame
     lfo = (step(LFO)+0.5)*LFO_depth_samples;
