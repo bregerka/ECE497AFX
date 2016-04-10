@@ -17,8 +17,8 @@ clear, close all
 %% User interface:
 
 % Effect parameters with suggested initial value and typical range:
-LFO_freq_Hz = .25; % low-frequency oscillator rate (Hz) / 1Hz / 0.1 to 10Hz
-LFO_depth_samples = 1000; % low-frequency oscillator depth (samples) / 5000 / 65536
+LFO_freq_Hz = 10;   % low-frequency oscillator rate (Hz) / 1Hz / 0.1 to 10Hz
+LFO_depth_samples = 1024; % low-frequency oscillator depth (samples) / 5000 / 65536
 delay_max_ms = 1000; % max delay line length (ms) / 0ms / 0 to 1000ms
                      % (the delay line max length is 65535 samples)
 
@@ -54,34 +54,69 @@ test_tone.SamplesPerFrame = audio_reader.SamplesPerFrame; % required; defaults t
    % values near 1 or 2; longer frame times show evidence of working 
    % properly at the individual sample level; as evidence, listen to
    % one frame of y when samples per frame is 2^14
-%LFO = dsp.SineWave(0.5,LFO_freq_Hz);
-LFO = dsp.TriWave(0.5,LFO_freq_Hz);
-LFO.SampleRate = audio_reader.SampleRate;
-LFO.SamplesPerFrame = test_tone.SamplesPerFrame;
+% LFO = dsp.SineWave(0.5,LFO_freq_Hz);
+
+%% Create one period of a non-sinusoidal signal waveform
+fs_Hz = audio_reader.SampleRate; % sampling rate
+f0_Hz = LFO_freq_Hz; % LFO frequency
+
+% choose (uncomment) one of these
+LFO = sawtooth(2*pi*(0:fs_Hz/f0_Hz-1)*f0_Hz/fs_Hz)';
+%LFO = diric(2*pi*(0:fs_Hz/f0_Hz-1)*f0_Hz/fs_Hz,7)';
+%LFO = square(2*pi*(0:fs_Hz/f0_Hz-1)*f0_Hz/fs_Hz)';
+
+% plot the waveform
+figure(1);
+plot(LFO);
+title('one period');
+
+%% Create a signal source from this waveform
+sigsrc = dsp.SignalSource(LFO);
+sigsrc.SamplesPerFrame = LFO_depth_samples;
+sigsrc.SignalEndAction = 'Cyclic repetition';
+
+%Creating signal sink to check final output
+sigsink = dsp.SignalSink;
+
+%LFO.SampleRate = audio_reader.SampleRate;
+%LFO.SamplesPerFrame = audio_reader.SamplesPerFrame;
 
 %% Read, process, and play the audio
 while ~isDone(audio_reader)
+    
+    % Generate the next frame from the signal source
+     z1 = step(sigsrc);
+     z = [z1 z1];
+    
     % Retrieve the next audio frame from the file
-    x = step(audio_reader);
+     x = step(audio_reader);
     
     % Uncommment this line to use the 440-Hz test tone instead
-    x = step(test_tone);
+    %  x = step(test_tone);
     
     % Get the next low-frequency oscillator output frame
-    lfo = (step(LFO)+0.5)*LFO_depth_samples;
-    
+    %lfo = (step(LFO)+0.5)*LFO_depth_samples;
+       
     % Retrieve the next frame from the delay line;
     % insert a new frame, too;
-    delayline_out = step(audio_delayline, x, lfo);
+    delayline_out = step(audio_delayline, x, z);
     
     % Generate the output
     y = delayline_out;
     
     % Listen to the results
     step(audio_player, y);
-
+    
+     % Storing signals to check results
+    step(sigsink,y);
+   
 end
 
+% plot a portion of the entire waveform that was collected within the loop
+figure(2)
+yall = sigsink.Buffer;
+plot(yall(1:fs_Hz));
+title('signal')
 
 %% Clean up
 release(audio_reader);
