@@ -1,4 +1,4 @@
-file_name = 'show.m4a';%'guitar.wav';
+file_name = 'Fender Bender.wav';%'guitar.wav';
 
 %% Create the audio reader and player objects
 audio_reader = dsp.AudioFileReader(file_name);
@@ -9,12 +9,12 @@ audio_player.QueueDuration = 0;
 %test_tone.SampleRate = audio_reader.SampleRate; %required; defaults to 1000Hz
 %test_tone.SamplesPerFrame = audio_reader.SamplesPerFrame; % required; defaults to 1
 
-values = [0 20 50 0 20 50 0 20 50 0 20 50];
+values = [0 11000 4500 0 11000 4500 0 11000 4500 0 11000 4500];
 
 
  f = figure;
  b = uicontrol('Parent',f,'Style','slider','Position',[80,50,25,200],...
-              'value',values(1), 'min',-30, 'max',8);
+              'value',values(1), 'min',-15, 'max',15);
  uicontrol('Style','text','Position',[70 300 60 50],'String','Gain(dB):');
  txt = uicontrol('Style','text','Position',[140 300 40 50],'String',b.Value);
  b2 = uicontrol('Parent',f,'Style','slider','Position',[110,50,25,200],...
@@ -22,43 +22,43 @@ values = [0 20 50 0 20 50 0 20 50 0 20 50];
  uicontrol('Style','text','Position',[60 280 80 50],'String','Center Freq:');
  txt1 = uicontrol('Style','text','Position',[140 280 40 50],'String',b2.Value);
  b3 = uicontrol('Parent',f,'Style','slider','Position',[140,50,25,200],...
-               'value',values(3), 'min',50, 'max',5000);
+               'value',values(3), 'min',50, 'max',9000);
  uicontrol('Style','text','Position',[70 260 75 50],'String','Bandwidth:');
  txt2 = uicontrol('Style','text','Position',[140 260 40 50],'String',b3.Value);
  b4 = uicontrol('Parent',f,'Style','slider','Position',[200,50,25,200],...
-              'value',values(4), 'min',-30, 'max',8);
+              'value',values(4), 'min',-15, 'max',15);
  uicontrol('Style','text','Position',[190 300 60 50],'String','Gain(dB):');
  txt3 = uicontrol('Style','text','Position',[260 300 40 50],'String',b4.Value);
  b5 = uicontrol('Parent',f,'Style','slider','Position',[230,50,25,200],...
-              'value',values(5), 'min',20, 'max',9000);
+              'value',values(5), 'min',20, 'max',22050);
  uicontrol('Style','text','Position',[180 280 80 50],'String','Center Freq:');
  txt4 = uicontrol('Style','text','Position',[260 280 40 50],'String',b5.Value);
  b6 = uicontrol('Parent',f,'Style','slider','Position',[260,50,25,200],...
-               'value',values(6), 'min',50, 'max',5000);
+               'value',values(6), 'min',50, 'max',9000);
  uicontrol('Style','text','Position',[190 260 75 50],'String','Bandwidth:');
  txt5 = uicontrol('Style','text','Position',[260 260 40 50],'String',b6.Value);
  b7 = uicontrol('Parent',f,'Style','slider','Position',[320,50,25,200],...
-              'value',values(7), 'min',-30, 'max',8);
+              'value',values(7), 'min',-15, 'max',15);
  uicontrol('Style','text','Position',[310 300 60 50],'String','Gain(dB):');
  txt6 = uicontrol('Style','text','Position',[380 300 40 50],'String',b7.Value);
  b8 = uicontrol('Parent',f,'Style','slider','Position',[350,50,25,200],...
-              'value',values(8), 'min',20, 'max',9000);
+              'value',values(8), 'min',20, 'max',22050);
  uicontrol('Style','text','Position',[300 280 80 50],'String','Center Freq:');
  txt7 = uicontrol('Style','text','Position',[380 280 40 50],'String',b8.Value);
  b9 = uicontrol('Parent',f,'Style','slider','Position',[380,50,25,200],...
-               'value',values(9), 'min',50, 'max',5000);
+               'value',values(9), 'min',50, 'max',9000);
  uicontrol('Style','text','Position',[310 260 75 50],'String','Bandwidth:');
  txt8 = uicontrol('Style','text','Position',[380 260 40 50],'String',b9.Value);
  b10 = uicontrol('Parent',f,'Style','slider','Position',[440,50,25,200],...
-              'value',values(7), 'min',-30, 'max',8);
+              'value',values(7), 'min',-15, 'max',15);
  uicontrol('Style','text','Position',[430 300 60 50],'String','Gain(dB):');
  txt9 = uicontrol('Style','text','Position',[500 300 40 50],'String',b10.Value);
  b11 = uicontrol('Parent',f,'Style','slider','Position',[470,50,25,200],...
-              'value',values(8), 'min',20, 'max',9000);
+              'value',values(8), 'min',20, 'max',22050);
  uicontrol('Style','text','Position',[420 280 80 50],'String','Center Freq:');
  txt10 = uicontrol('Style','text','Position',[500 280 40 50],'String',b11.Value);
  b12 = uicontrol('Parent',f,'Style','slider','Position',[500,50,25,200],...
-               'value',values(9), 'min',50, 'max',5000);
+               'value',values(9), 'min',50, 'max',9000);
  uicontrol('Style','text','Position',[430 260 75 50],'String','Bandwidth:');
  txt11 = uicontrol('Style','text','Position',[500 260 40 50],'String',b12.Value);
 
@@ -99,6 +99,7 @@ while ~isDone(audio_reader)
     txt9.String = round(b10.Value,2);
     txt10.String = round(b11.Value);
     txt11.String = round(b12.Value);
+
     % Retrieve the next audio frame from the file
     x = step(audio_reader);
     
@@ -114,7 +115,7 @@ while ~isDone(audio_reader)
     %step(specAn,y)
     %plot(y)
     % Listen to the results
-    %audiowrite('Audio\testingWrite.wav',y,44100);
+   % audiowrite('GraphicPEQ.wav',y,44100);
     step(audio_player, y);
 
 end
