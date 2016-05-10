@@ -22,8 +22,25 @@ audio_player.QueueDuration = 0; % useful for very short audio clips
 
 %% Convert the user interface values:
 %G = 2^(g_dB/6);
+delay_ms1 = 29.7;
+delay_ms2 = 37.1;
+delay_ms3 = 41.1;
+delay_ms4 = 43.7;
 G = 60;
+%% Convert the user interface values:
+% delay in samples and linear gain
+delay1 = (delay_ms1/1000)*audio_reader.SampleRate;
+delay2 = (delay_ms2/1000)*audio_reader.SampleRate;
+delay3 = (delay_ms3/1000)*audio_reader.SampleRate;
+delay4 = (delay_ms4/1000)*audio_reader.SampleRate;
+g = 2^(g_dB/6);
+gfb = 2^(0/6);
 
+%% Create the delay line object
+audio_delayline1 = dsp.Delay(round(delay1));
+audio_delayline2 = dsp.Delay(round(delay2));
+audio_delayline3 = dsp.Delay(round(delay3));
+audio_delayline4 = dsp.Delay(round(delay4));
 %% Read, process, and play the audio
 pass_first_time = 1;
 bDelays = 0;
@@ -32,8 +49,14 @@ while ~isDone(audio_reader)
     x = step(audio_reader);
     
     % Generate the output
-    y = sign(x).*(1-exp(-abs(G.*x)));
+    %y = sign(x).*(1-exp(-abs(G.*x)));
     
+    if pass_first_time
+        pass_first_time = 0;
+        delayline_out = step(audio_delayline, x);
+    else
+        delayline_out = gfb*step(audio_delayline, x);
+    end
     % Listen to the results
     step(audio_player, y);
 
