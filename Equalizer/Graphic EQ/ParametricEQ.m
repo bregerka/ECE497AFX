@@ -1,13 +1,13 @@
-file_name = 'Fender Bender.wav';%'guitar.wav';
-
+file_name = 'Fender Bender.wav';
+writeFile = true;
 %% Create the audio reader and player objects
 audio_reader = dsp.AudioFileReader(file_name);
 audio_player = dsp.AudioPlayer('SampleRate', audio_reader.SampleRate);
 audio_player.QueueDuration = 0;
 
-%test_tone = dsp.SineWave(1,1000);
-%test_tone.SampleRate = audio_reader.SampleRate; %required; defaults to 1000Hz
-%test_tone.SamplesPerFrame = audio_reader.SamplesPerFrame; % required; defaults to 1
+audio_writer = dsp.AudioFileWriter('Test1.wav');
+audio_writer.SampleRate = audio_reader.SampleRate;
+audio_writer.FileFormat = 'wav';
 
 values = [0 11000 4500 0 11000 4500 0 11000 4500 0 11000 4500];
 
@@ -73,7 +73,8 @@ values = [0 11000 4500 0 11000 4500 0 11000 4500 0 11000 4500];
 %fvtool(H,H2);
 
 %% Read, process, and play the audio
-while ~isDone(audio_reader)
+%while ~isDone(audio_reader)
+for N = 1:1500
     drawnow();
     H.CenterFrequency = b2.Value;
     H.Bandwidth = b3.Value;
@@ -117,7 +118,7 @@ while ~isDone(audio_reader)
     % Listen to the results
    % audiowrite('GraphicPEQ.wav',y,44100);
     step(audio_player, y);
-
+  if writeFile  step(audio_writer, y); end
 end
 
 
