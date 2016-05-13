@@ -1,4 +1,4 @@
-%% AFX -- Figure 2.1 - Basic delay
+%% AFX -- Figure 2.1 - Ping Pong delay
 %
 % References:
 % http://www.mathworks.com/help/dsp/ref/dsp.delay-class.html
