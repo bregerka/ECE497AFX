@@ -16,9 +16,12 @@ file_name = 'guitar.wav';%'snare.wav';%'A_eng_f1.wav'; % mono
 %audio_folder = 'C:\doering\Class\ECE497afx\resources\sounds';
 more_time_sec = 1;
 %% Create the audio reader and player objects
-audio_reader = dsp.AudioFileReader(file_name);
-audio_player = dsp.AudioPlayer('SampleRate', audio_reader.SampleRate);
-audio_player.QueueDuration = 0; % useful for very short audio clips
+audio_reader = audioread(file_name);
+sigsrc = dsp.SignalSource(audio_reader);
+sigsrc.SamplesPerFrame = 1024;
+%sigsrc.SignalEndAction = 'Zero';%feed out zeros
+%audio_player = dsp.AudioPlayer('SampleRate', audio_reader.SampleRate);
+%audio_player.QueueDuration = 0; % useful for very short audio clips
 
 %% Convert the user interface values:
 %G = 2^(g_dB/6);
@@ -71,10 +74,10 @@ BP1 = [-g5 zeros(1,N5-1) 1];
 AP2 = [1 zeros(1,N6-1) -g6];
 BP2 = [-g6 zeros(1,N6-1) 1];
 %% Create the delay line object
-audio_delayline1 = dsp.Delay(round(delay1));
-audio_delayline2 = dsp.Delay(round(delay2));
-audio_delayline3 = dsp.Delay(round(delay3));
-audio_delayline4 = dsp.Delay(round(delay4));
+%audio_delayline1 = dsp.Delay(round(delay1));
+%audio_delayline2 = dsp.Delay(round(delay2));
+%audio_delayline3 = dsp.Delay(round(delay3));
+%audio_delayline4 = dsp.Delay(round(delay4));
 %% Read, process, and play the audio
 pass_first_time = 1;
 bDelays = 0;
