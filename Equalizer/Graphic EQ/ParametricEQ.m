@@ -5,7 +5,7 @@ audio_reader = dsp.AudioFileReader(file_name);
 audio_player = dsp.AudioPlayer('SampleRate', audio_reader.SampleRate);
 audio_player.QueueDuration = 0;
 
-audio_writer = dsp.AudioFileWriter('Test1.wav');
+audio_writer = dsp.AudioFileWriter('variedBW.wav');
 audio_writer.SampleRate = audio_reader.SampleRate;
 audio_writer.FileFormat = 'wav';
 
@@ -74,7 +74,7 @@ values = [0 11000 4500 0 11000 4500 0 11000 4500 0 11000 4500];
 
 %% Read, process, and play the audio
 %while ~isDone(audio_reader)
-for N = 1:1500
+for N = 1:800
     drawnow();
     H.CenterFrequency = b2.Value;
     H.Bandwidth = b3.Value;
@@ -104,19 +104,12 @@ for N = 1:1500
     % Retrieve the next audio frame from the file
     x = step(audio_reader);
     
-    % Uncommment this line to use the 440-Hz test tone instead
-    %x = step(test_tone);
-    
     % Generate the output
     y = step(H,x);
     y = step(H2,y);
     y = step(H3,y);
     y = step(H4,y);
-   % specAn = dsp.SpectrumAnalyzer('SampleRate',44100);
-    %step(specAn,y)
-    %plot(y)
-    % Listen to the results
-   % audiowrite('GraphicPEQ.wav',y,44100);
+   
     step(audio_player, y);
   if writeFile  step(audio_writer, y); end
 end

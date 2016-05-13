@@ -20,13 +20,13 @@ sampRate = 44100;
 audio_reader = audioread(file_name);
 sigsrc = dsp.SignalSource(audio_reader);
 sigsrc.SamplesPerFrame = 4096;
-%sigsrc.SignalEndAction = 'Zero';%feed out zeros
+sigsrc.SignalEndAction = 'Set to zero';%feed out zeros
 audio_player = dsp.AudioPlayer('SampleRate', 44100);
 audio_player.QueueDuration = 0; % useful for very short audio clips
 
 %% Convert the user interface values:
 %G = 2^(g_dB/6);
-RT60 = .000001;
+RT60 = 1;
 
 Tau1 = 29.7/1000;
 Tau2 = 37.1/1000;
