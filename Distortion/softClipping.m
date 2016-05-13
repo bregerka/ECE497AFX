@@ -9,20 +9,21 @@
 clear, close all
 
 %% User interface:
-
+writeFile = true;
+more_time_sec = .5;
 % Source audio:
-file_name = 'guitar.wav';%'snare.wav';%'A_eng_f1.wav'; % mono
-%file_name = 'Mixing Audio (Roey Izhaki)\11-014 Guitar Src.wav'; % stereo
-%audio_folder = 'C:\doering\Class\ECE497afx\resources\sounds';
+file_name = 'Original Guitar.wav';
 
 %% Create the audio reader and player objects
 audio_reader = dsp.AudioFileReader(file_name);
 audio_player = dsp.AudioPlayer('SampleRate', audio_reader.SampleRate);
 audio_player.QueueDuration = 0; % useful for very short audio clips
 
+audio_writer = dsp.AudioFileWriter('softClipG_500.wav');
+audio_writer.SampleRate = audio_reader.SampleRate;
+audio_writer.FileFormat = 'wav';
 %% Convert the user interface values:
-%G = 2^(g_dB/6);
-G = 60;
+G = 500;
 
 %% Read, process, and play the audio
 pass_first_time = 1;
@@ -36,19 +37,17 @@ while ~isDone(audio_reader)
     
     % Listen to the results
     step(audio_player, y);
-
+    if writeFile  step(audio_writer, y); end
 end
 
 % Run for extended time after source audio ends; use silence as input
 x(:) = 0;
 for k=1:floor(more_time_sec*audio_reader.SampleRate/audio_reader.SamplesPerFrame)
-    delayline_out = step(audio_delayline, x);
-    y = x + delayline_out;
-    step(audio_player, y);
+    step(audio_player, x);
 end
 
 %% Clean up
 release(audio_reader);
 release(audio_player);
-
+release(audio_writer);
 % All done!

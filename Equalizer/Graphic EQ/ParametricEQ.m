@@ -118,5 +118,5 @@ end
 %% Clean up
 release(audio_reader);
 release(audio_player);
-
+release(audio_writer);
 % All done!
