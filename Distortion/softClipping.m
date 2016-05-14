@@ -19,11 +19,11 @@ audio_reader = dsp.AudioFileReader(file_name);
 audio_player = dsp.AudioPlayer('SampleRate', audio_reader.SampleRate);
 audio_player.QueueDuration = 0; % useful for very short audio clips
 
-audio_writer = dsp.AudioFileWriter('softClipG_500.wav');
+audio_writer = dsp.AudioFileWriter('softClipG_5.ogg');
 audio_writer.SampleRate = audio_reader.SampleRate;
-audio_writer.FileFormat = 'wav';
+audio_writer.FileFormat = 'ogg';
 %% Convert the user interface values:
-G = 500;
+G = 5;
 
 %% Read, process, and play the audio
 pass_first_time = 1;

@@ -1,4 +1,4 @@
-%% AFX -- Figure 2.1 - Basic delay
+%% AFX -- SchroedersReverb
 %
 % References:
 % http://www.mathworks.com/help/dsp/ref/dsp.delay-class.html
@@ -12,7 +12,7 @@ clear, close all
 
 % Source audio:
 file_name = 'guitar.wav';%'snare.wav';%'A_eng_f1.wav'; % mono
-writeFile = true;
+writeFile = false;
 more_time_sec = 1;
 sampRate = 44100;
 %% Create the audio reader and player objects
@@ -23,11 +23,11 @@ sigsrc.SignalEndAction = 'Set to zero';%feed out zeros
 audio_player = dsp.AudioPlayer('SampleRate', 44100);
 audio_player.QueueDuration = 0; % useful for very short audio clips
 
-audio_writer = dsp.AudioFileWriter('sReverb_1sec.ogg');
+audio_writer = dsp.AudioFileWriter('sReverb_.2sec.ogg');
 audio_writer.SampleRate = 44100;
 audio_writer.FileFormat = 'ogg';
 %% Convert the user interface values:
-RT60 = 3;
+RT60 = 1;
 
 Tau1 = 29.7/1000;
 Tau2 = 37.1/1000;
@@ -101,5 +101,5 @@ end
 
 %% Clean up
 release(audio_player);
-
+release(audio_writer);
 % All done!

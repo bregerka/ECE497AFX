@@ -1,9 +1,4 @@
-%% AFX -- Figure 2.1 - Basic delay
-%
-% References:
-% http://www.mathworks.com/help/dsp/ref/dsp.delay-class.html
-% http://www.mathworks.com/help/dsp/systemobjectslist.html
-%
+%% AFX -- SchroedersReverb
 
 % Begin with a clean workspace
 clear, close all
@@ -95,7 +90,6 @@ end
 % Run for extended time after source audio ends; use silence as input
 x(:) = 0;
 for k=1:floor(more_time_sec*44100/sigsrc.SamplesPerFrame)
-    %delayline_out = step(audio_delayline, x);
     step(audio_player, x);
 end
 
