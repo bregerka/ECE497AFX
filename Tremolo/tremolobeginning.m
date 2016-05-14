@@ -1,6 +1,6 @@
 % Begin with a clean workspace
 clear, close all
-
+writeFile = true;
 %% User interface:
 
 % Effect parameters with suggested initial value and typical range:
@@ -13,13 +13,16 @@ a = 0.5;            %value between 0 and 1 that sets gain for LFO
 osc_freq_Hz = 350;
 
 % Source audio:
-file_name = 'guitar.wav';
+file_name = 'snare.wav';
 audio_folder = 'C:\Users\bochnoej\Documents\GitHub\ECE497AFX\Audio';
 
 %% Create the audio reader and player objects
 audio_reader = dsp.AudioFileReader([audio_folder '\' file_name]);
 audio_player = dsp.AudioPlayer('SampleRate', audio_reader.SampleRate);
 audio_player.QueueDuration = 0;
+audio_writer = dsp.AudioFileWriter('SnareTremelo.ogg');
+audio_writer.SampleRate = 44100;
+audio_writer.FileFormat = 'ogg';
 
 %% Convert the user interface values:
 % delay in samples and linear gain
@@ -75,10 +78,10 @@ sigsink = dsp.SignalSink;
 while ~isDone(audio_reader)
        
     % Retrieve the next audio frame from the file
-    %x = step(audio_reader);
+    x = step(audio_reader);
     m = (step(LFO)+0.5)*LFO_depth_samples;
     % Uncommment this line to use the 440-Hz test tone instead
-     x = step(test_tone);
+    % x = step(test_tone);
     
     % Get the next low-frequency oscillator output frame used only with
     % sine wave
@@ -91,15 +94,17 @@ while ~isDone(audio_reader)
     delayline_out = step(audio_delayline, x, lfo);
     
     % Generate the output
-    %y = delayline_out;
+    y = delayline_out;
     
     %uncomment if test-tone
-    y = [delayline_out delayline_out];
+    %y = [delayline_out delayline_out];
     % Listen to the results
     step(audio_player, y);
     
      % Storing signals to check results
     step(sigsink,y);
+    
+    if writeFile  step(audio_writer, y); end
    
 end
 

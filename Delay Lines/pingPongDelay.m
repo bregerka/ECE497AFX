@@ -14,7 +14,7 @@ clear, close all
 delay_ms = 300; % delay line length (ms) / 300ms / 0 to 2000ms or more
 g_dB = -5; % feed-forward gain (dB) / -5dB / -120dB to +2dB
 more_time_sec = 1; % time extension after source audio ends (seconds)
-
+writeFile = true;
 % Source audio:
 file_name = 'snare.wav';%'A_eng_f1.wav'; % mono
 %file_name = 'Mixing Audio (Roey Izhaki)\11-014 Guitar Src.wav'; % stereo
@@ -25,6 +25,9 @@ audio_reader = dsp.AudioFileReader(file_name);
 audio_player = dsp.AudioPlayer('SampleRate', audio_reader.SampleRate);
 audio_player.QueueDuration = 0; % useful for very short audio clips
 
+audio_writer = dsp.AudioFileWriter('pingPongSnare.ogg');
+audio_writer.SampleRate = 44100;
+audio_writer.FileFormat = 'ogg';
 %% Convert the user interface values:
 % delay in samples and linear gain
 delay = (delay_ms/1000)*audio_reader.SampleRate;
@@ -41,7 +44,7 @@ audio_delayline = dsp.Delay(round(delay));
 %% Read, process, and play the audio
 pass_first_time = 1;
 bDelays = 0;
-while ~isDone(audio_reader)
+    for C = 1:300
     % Retrieve the next audio frame from the file
     x = step(audio_reader);
     
@@ -68,7 +71,7 @@ while ~isDone(audio_reader)
     
     % Listen to the results
     step(audio_player, y);
-
+    if writeFile  step(audio_writer, y); end
 end
 
 % Run for extended time after source audio ends; use silence as input

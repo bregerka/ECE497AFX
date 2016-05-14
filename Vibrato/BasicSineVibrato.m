@@ -1,10 +1,11 @@
 % Begin with a clean workspace
 clear, close all
+writeFile = true;
 
 %% User interface:
 
 % Effect parameters with suggested initial value and typical range:
-LFO_freq_Hz = 10;   % low-frequency oscillator rate (Hz) / 1Hz / 0.1 to 10Hz
+LFO_freq_Hz = 5;   % low-frequency oscillator rate (Hz) / 1Hz / 0.1 to 10Hz
 LFO_depth_samples = 1024; % low-frequency oscillator depth (samples) / 5000 / 65536
 delay_max_ms = 1000; % max delay line length (ms) / 0ms / 0 to 1000ms
                      % (the delay line max length is 65535 samples)
@@ -13,13 +14,16 @@ delay_max_ms = 1000; % max delay line length (ms) / 0ms / 0 to 1000ms
 osc_freq_Hz = 350;
 
 % Source audio:
-file_name = 'guitar.wav';
+file_name = 'show.wav';
 audio_folder = 'C:\Users\bochnoej\Documents\GitHub\ECE497AFX\Audio';
 
 %% Create the audio reader and player objects
 audio_reader = dsp.AudioFileReader([audio_folder '\' file_name]);
 audio_player = dsp.AudioPlayer('SampleRate', audio_reader.SampleRate);
 audio_player.QueueDuration = 0;
+audio_writer = dsp.AudioFileWriter('SnareVibrato.ogg');
+audio_writer.SampleRate = 44100;
+audio_writer.FileFormat = 'ogg';
 
 %% Convert the user interface values:
 % delay in samples and linear gain
@@ -50,8 +54,8 @@ f0_Hz = LFO_freq_Hz; % LFO frequency
 % choose (uncomment) one of these to use as the LFO waveform, if sinewave
 % is used ensure that correct lines of code are uncommented in audio player
 %LFO = dsp.SineWave(0.5,LFO_freq_Hz);
-%LFO = 1000*sawtooth(2*pi*(0:fs_Hz/f0_Hz-1)*f0_Hz/fs_Hz)';
-LFO = 1000*sawtooth(2*pi*(0:fs_Hz/f0_Hz-1)*f0_Hz/fs_Hz,0.5)';
+LFO = 1000*sawtooth(2*pi*(0:fs_Hz/f0_Hz-1)*f0_Hz/fs_Hz)';
+%LFO = 1000*sawtooth(2*pi*(0:fs_Hz/f0_Hz-1)*f0_Hz/fs_Hz,0.5)';
 
 %Two more lines of code that are uncommented if sine wave is used
 %LFO.SampleRate = audio_reader.SampleRate;
@@ -105,6 +109,8 @@ while ~isDone(audio_reader)
     
      % Storing signals to check results
     step(sigsink,y);
+    
+     if writeFile  step(audio_writer, y); end
    
 end
 
